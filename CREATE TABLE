@@ -1,0 +1,95 @@
+--If you have your laptop then create a database first
+
+--CREATE DATABASE [student_no]
+
+--GO
+
+--If you are using college computer then your student_no is 
+
+--your database
+
+USE [88306]--you have to write your own student no
+
+GO
+
+CREATE TABLE Customer_T
+
+(
+
+CustomerId int not null IDENTITY(100,1),
+
+CustomerName varchar(30),
+
+CustomerAddress varchar(50),
+
+CustomerCity varchar(30),
+
+CustomerState char(2),
+
+CustomerPostalCode varchar(30)
+
+CONSTRAINT pk_customerId PRIMARY KEY (CustomerId)
+
+)
+
+GO
+
+CREATE TABLE Product_T(
+
+ProductId int not null IDENTITY,
+
+ProductDescription varchar(50),
+
+ProductFinish varchar(20) CHECK 
+
+(ProductFinish in ('Cherry', 'Natural Ash', 
+
+'White Ash', 'Red Oak', 'Natural Oak', 'Walnut')),
+
+ProductPrice decimal(6,2),
+
+CONSTRAINT pk_productId PRIMARY KEY (ProductId)
+
+)
+
+GO
+
+CREATE TABLE Order_T(
+
+OrderId int not null IDENTITY(1000, 1),
+
+OrderDate date not null default(cast(getDate() as Date)),
+
+CustomerId int,
+
+CONSTRAINT pk_orderId PRIMARY KEY (OrderId),
+
+CONSTRAINT fk_customerId FOREIGN KEY (CustomerId) 
+
+REFERENCES Customer_T (CustomerId)
+
+)
+
+GO
+
+CREATE TABLE OrderLine_T(
+
+OrderId int not null,
+
+ProductId int not null,
+
+Quantity int,
+
+CONSTRAINT fk1_OrderId FOREIGN KEY (OrderId) 
+
+REFERENCES Order_T (OrderId),
+
+CONSTRAINT fk2_ProductId FOREIGN KEY (ProductId)
+
+REFERENCES Product_T(ProductId),
+
+CONSTRAINT pk_Product_Order PRIMARY KEY (OrderId, ProductId)
+
+)
+
+GO
