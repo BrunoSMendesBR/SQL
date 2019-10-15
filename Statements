@@ -1,0 +1,522 @@
+USE [88306]
+
+GO
+
+SELECT * FROM Customer_T
+
+GO
+
+SELECT * FROM Product_T
+
+GO
+
+SELECT * FROM Order_T
+
+GO
+
+SELECT * From OrderLine_T
+
+
+
+-- renaming a table in sql server
+
+EXEC sp_rename 'OrderLine', 'OrderLine_T'
+
+
+
+SELECT * FROM OrderLine_T
+
+
+
+--DML Queries
+
+SELECT * FROM Customer_T
+
+
+
+--filtering the customers based on the state
+
+SELECT * FROM Customer_T WHERE CustomerState='FL'
+
+
+
+--filtering the customers' names based on the state
+
+SELECT CustomerName FROM Customer_T WHERE CustomerState='FL'
+
+
+
+--Sorting customers in ascending order based on Customer Name
+
+SELECT * FROM Customer_T Order By CustomerName
+
+
+
+--Sorting customers in descending order based on Customer Name
+
+SELECT * FROM Customer_T Order By CustomerName DESC
+
+
+
+--If you want to see the states of cutomers
+
+SELECT DISTINCT CustomerState AS [State] FROM Customer_T
+
+
+
+--Use of conditional operators
+
+SELECT * FROM Product_T 
+
+WHERE ProductPrice > 400 AND ProductPrice <= 800
+
+
+
+--Between includes both bounds (400 and 800)
+
+SELECT * FROM Product_T 
+
+WHERE ProductPrice BETWEEN 400 AND 800
+
+
+
+ -- Use of OR
+
+ SELECT * FROM Product_T 
+
+ WHERE ProductFinish = 'Cherry' OR ProductFinish = 'Walnut'
+
+
+
+ -- Aggregate Function
+
+ SELECT COUNT(*) AS [Total Customers] FROM Customer_T
+
+
+
+ --Max
+
+ SELECT MAX(ProductPrice) AS [Maximum Price] FROM Product_T
+
+ 
+
+ --Min
+
+ SELECT MIN(ProductPrice) AS [Maximum Price] FROM Product_T
+
+
+
+ --Use of LIKE
+
+ SELECT * FROM Customer_T WHERE CustomerName LIKE '%ings'
+
+
+
+ SELECT * FROM Customer_T WHERE CustomerName LIKE 'a%'
+
+
+
+ SELECT * FROM Customer_T WHERE CustomerName LIKE '%as%'
+
+
+
+ --examples of joins
+
+ SELECT cus.CustomerName, ord.OrderId, ord.OrderDate
+
+ FROM Customer_T as cus INNER JOIN Order_T as ord
+
+ ON cus.CustomerId = ord.CustomerId
+
+
+
+ --Left Join
+
+ SELECT cus.CustomerName, ord.OrderId, ord.OrderDate
+
+ FROM Customer_T as cus 
+
+ LEFT JOIN Order_T as ord
+
+ ON cus.CustomerId = ord.CustomerId
+
+
+
+ --RIGHT Join
+
+ SELECT cus.CustomerName, ord.OrderId, ord.OrderDate
+
+ FROM Customer_T as cus 
+
+ RIGHT JOIN Order_T as ord
+
+ ON cus.CustomerId = ord.CustomerId
+
+
+
+ --Use of Subquery
+
+ --Name of all those customers who submitted orders
+
+ SELECT CustomerName FROM Customer_T
+
+ WHERE CustomerID IN (SELECT DISTINCT CustomerID FROM Order_T)
+
+
+
+ --Exercise
+
+-- Assemble all information necessary to create an invoice for 
+
+--Order No 1005
+
+SELECT ord.OrderId, p.ProductID, p.ProductDescription, 
+
+ol.Quantity,
+
+cus.CustomerName, cus.CustomerAddress+','+cus.CustomerCity+','+
+
+cus.CustomerState AS [Address]
+
+FROM Product_T as p 
+
+INNER JOIN OrderLine_T as ol
+
+ON p.ProductId = ol.ProductId
+
+INNER JOIN Order_T as ord ON ol.OrderId = ord.OrderId
+
+INNER JOIN Customer_T as cus ON ord.CustomerId = cus.CustomerId
+
+WHERE ord.OrderId = 1005 
+
+
+
+--example of Group By
+
+SELECT COUNT(*) AS [No of Customers], CustomerState FROM Customer_T 
+
+GROUP BY CustomerState
+
+
+
+--example of Group By with where
+
+SELECT COUNT(*) AS [No of Customers], CustomerState FROM Customer_T 
+
+WHERE CustomerID > 101
+
+GROUP BY CustomerState
+
+
+
+--example of Group By with where and Having
+
+SELECT COUNT(*) AS [No of Customers], CustomerState FROM Customer_T 
+
+WHERE CustomerID > 101
+
+GROUP BY CustomerState
+
+Having COUNT(*) > 5
+
+GO
+
+-- Examples of Views
+
+CREATE VIEW InvoiceData
+
+AS
+
+SELECT ord.OrderId, p.ProductID, p.ProductDescription, 
+
+ol.Quantity,
+
+cus.CustomerName, cus.CustomerAddress+','+cus.CustomerCity+','+
+
+cus.CustomerState AS [Address]
+
+FROM Product_T as p 
+
+INNER JOIN OrderLine_T as ol
+
+ON p.ProductId = ol.ProductId
+
+INNER JOIN Order_T as ord ON ol.OrderId = ord.OrderId
+
+INNER JOIN Customer_T as cus ON ord.CustomerId = cus.CustomerId
+
+WHERE ord.OrderId = 1005 
+
+
+
+--executing Views
+
+SELECT * FROM InvoiceData
+
+GO
+
+--Example of Updateable View
+
+CREATE VIEW CustomerRecords_FL
+
+AS
+
+SELECT * FROM Customer_T
+
+WHERE CustomerState = 'FL'
+
+GO
+
+CREATE VIEW CustomerRecords_FL1
+
+AS
+
+SELECT * FROM Customer_T
+
+WHERE CustomerState = 'FL'
+
+WITH CHECK OPTION
+
+GO
+
+INSERT INTO CustomerRecords_FL 
+
+VALUES ('Classic Homes','2 Tara Street','Heuston','AB','AB01')
+
+
+
+INSERT INTO CustomerRecords_FL1 
+
+VALUES ('Modern Homes','1 Aungier Street','Heuston','FL','AB01')
+
+
+
+SELECT * FROM Customer_T
+
+GO
+
+--Examples of Stored Procedures
+
+DROP PROC uspAllProducts
+
+GO
+
+CREATE PROC uspAllProducts
+
+AS
+
+SELECT * FROM Product_T
+
+
+
+EXEC uspAllProducts
+
+GO
+
+--Example 2 with Parameter
+
+CREATE PROC uspProducts_Finish
+
+@finish varchar(20)
+
+AS
+
+SELECT * FROM Product_T 
+
+WHERE ProductFinish = @finish
+
+GO
+
+EXEC uspProducts_Finish 'Natural Ash'
+
+
+
+EXEC uspProducts_Finish 'Cherry'
+
+GO
+
+--Example 3 with 2 input Parameters
+
+CREATE PROC uspProducts_Finish1
+
+@finish varchar(20),
+
+@price decimal(6,2)
+
+AS
+
+SELECT * FROM Product_T 
+
+WHERE ProductFinish = @finish AND ProductPrice <=@price
+
+GO
+
+EXEC uspProducts_Finish1 'Natural Ash', 700
+
+GO
+
+--Example 4, input and output parameters
+
+ALTER PROC uspProductsCount
+
+@price decimal(6,2), -- input parameter
+
+@count int OUTPUT --output parameter
+
+AS
+
+SELECT @count = COUNT(*) FROM Product_T
+
+WHERE ProductPrice <= @price
+
+GO
+
+DECLARE @counter int
+
+EXEC uspProductsCount 700, @counter output
+
+SELECT @counter
+
+GO
+
+--Example 5 - Use of if/else statements
+
+ALTER PROC uspInsertCustomer
+
+@name varchar(20),
+
+@city varchar(20),
+
+@state varchar(2)
+
+AS
+
+IF NOT EXISTS (SELECT CustomerName FROM Customer_T
+
+		WHERE CustomerName= @name AND CustomerCity=@city AND 
+
+		CustomerState=@state)		
+
+	BEGIN 
+
+		INSERT INTO Customer_T VALUES(@name,'',@city, @state,'')
+
+		PRINT('A new Customer record is created')
+
+	END
+
+ELSE
+
+	BEGIN
+
+		print('Customer already exists')
+
+	END
+
+GO
+
+SET NoCOUNT ON
+
+EXEC uspInsertCustomer 'New Homes','Heuston','FL'
+
+SELECT * FROM Customer_T
+
+SELECT CustomerName= 'New Homes' FROM Customer_T
+
+GO
+
+-- Examples of functions
+
+CREATE FUNCTION fn_fullAddress(
+
+@street varchar(30),
+
+@city varchar(20),
+
+@state char(2)
+
+)
+
+RETURNS varchar(50)
+
+AS
+
+BEGIN
+
+	DECLARE @fullAddress as varchar(50)
+
+	SET @fullAddress = @street+', ' + @city+', '+@state
+
+	RETURN @fullAddress
+
+END
+
+--Calling a function
+
+SELECT CustomerID, CustomerName, 
+
+dbo.fn_fullAddress(CustomerAddress, CustomerCity, CustomerState)
+
+AS [Address]
+
+FROM Customer_T
+
+GO
+
+--Exercise
+
+--Write a function that takes two parameters, i.e. price and discount rate
+
+--and returns the discounted price.
+
+CREATE FUNCTION fn_DiscountedPrice(
+
+@price decimal(6, 2),
+
+@rate int
+
+)
+
+RETURNS decimal(6,2)
+
+BEGIN
+
+	DECLARE @discount decimal(6,2)
+
+	SET @discount = (@price - (@price * @rate/100))
+
+	RETURN @discount
+
+END
+
+-- Calling function
+
+SELECT ProductDescription, ProductPrice AS [Original Price],
+
+dbo.fn_DiscountedPrice(ProductPrice, 10) AS [Sale Price]
+
+FROM Product_T
+
+GO
+
+-- Example of a function returning table
+
+ALTER FUNCTION fn_ProductCost(
+
+@cost decimal(6, 2)
+
+)
+
+RETURNS TABLE
+
+AS
+
+RETURN (SELECT * FROM Product_T WHERE ProductPrice < @cost)
+
+GO
+
+SELECT * FROM fn_ProductCost(500)
+
+GO
+
