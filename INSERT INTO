@@ -1,0 +1,99 @@
+INSERT INTO Product_T VALUES 
+
+('Computer Desk', 'Natural Ash', 375),
+
+('Entertainment Centre', 'Natural Oak',650),
+
+('Writers Desk', 'Cherry', 350),
+
+('Drawers Desk', 'White Ash',750),
+
+('Dining Table', 'Natural Ash',800),
+
+('Computer Desk', 'Walnut', 250)
+
+
+
+SELECT * FROM Product_T
+
+
+
+INSERT INTO Customer_T VALUES
+
+('Home Furnishing', '1900 Allard Ave.','Gainesville', 'FL','32601-2871' ),
+
+('Eastern Furniture','1925 Beltline Road', 'Plano', 'TX', '75094-7743'),
+
+('Impressions', '5585 Westcott Ct.','Gainesville', 'FL','32601-2871' ),
+
+('Furniture Gallery','325 Flatiron Dr.', 'Plano', 'TX', '75094-7743'),
+
+('Period Furniture', '394 Rainbow Dr.','Gainesville', 'FL','32601-2871' ),
+
+('California Classics','816 Peach Road', 'Plano', 'TX', '75094-7743'),
+
+('M and H Casual Furniture', '3709 First Street','Gainesville', 'FL','32601-2871' ),
+
+('Seminole Interiors','2400 Rocky Point Dr.', 'Plano', 'TX', '75094-7743'),
+
+('American Euro Lifestyle', '2424 Missouri Ave N.','Gainesville', 'FL','32601-2871' ),
+
+('Battle Greek Furniture','345 Capital Ave. SW', 'Plano', 'TX', '75094-7743'),
+
+('Herritage Furnishings', '66789 College Ave.','Gainesville', 'FL','32601-2871' ),
+
+('Kanoehe Homes','112 Kiowal St.', 'Plano', 'TX', '75094-7743'),
+
+('Mountain Scenes', '4182 Main Street','Gainesville', 'FL','32601-2871' )
+
+
+
+INSERT INTO Order_T VALUES 
+
+('2015-10-21', 101),
+
+('2015-10-21', 108),
+
+('2015-10-22',112),
+
+('2015-10-22', 105),
+
+('2015-10-24', 103),
+
+('2015-10-24',102),
+
+('2015-10-27',111),
+
+('2015-10-30',112),
+
+('2015-11-05', 104),
+
+('2015-11-05', 111)
+
+GO
+
+INSERT INTO OrderLine_T VALUES
+
+(1002, 1, 2),
+
+(1002, 2, 3),
+
+(1002, 6, 1),
+
+(1003, 1, 1),
+
+(1004, 1, 1),
+
+(1004, 2, 2),
+
+(1005, 1, 1),
+
+(1005, 4, 2),
+
+(1007, 3, 2),
+
+(1008, 1, 1),
+
+(1009, 4, 2),
+
+(1009, 5, 1)
